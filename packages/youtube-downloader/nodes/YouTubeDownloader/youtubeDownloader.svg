@@ -1,4 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60">
-	<rect x="2" y="2" width="56" height="56" rx="12" fill="#FF0033" />
-	<path d="M24 16 L24 30 L18 30 L30 44 L42 30 L36 30 L36 16 Z" fill="#FFFFFF" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+	<defs>
+		<linearGradient id="ytBadge" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#F0483C" />
+			<stop offset="1" stop-color="#BE120B" />
+		</linearGradient>
+	</defs>
+	<rect width="48" height="48" rx="8" fill="#A8100D" />
+	<rect x="10.5" y="12" width="27" height="24" rx="5.5" fill="url(#ytBadge)" />
+	<path d="M20.5 17.5 L31.5 24 L20.5 30.5 Z" fill="#FFFFFF" />
 </svg>
