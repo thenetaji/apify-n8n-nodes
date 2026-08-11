@@ -16,7 +16,11 @@
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
 		"incremental": true,
-		"tsBuildInfoFile": "./.tsbuildinfo",
+		// Must live inside outDir. `n8n-node build` starts with rimraf('dist'), so a
+		// cache kept outside it survives the wipe, convinces tsc the outputs are still
+		// current, and emits nothing — leaving a dist/ of only the copied SVGs and a
+		// node that n8n silently never loads. Keeping it here ties the two together.
+		"tsBuildInfoFile": "./dist/.tsbuildinfo",
 		"declaration": true,
 		"sourceMap": true,
 		"skipLibCheck": true,
