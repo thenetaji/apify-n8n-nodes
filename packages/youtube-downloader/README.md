@@ -106,6 +106,24 @@ How it works:
 - **Music**: `savedFile` is present on every row that reaches the dataset, because a track whose audio save fails is **not emitted at all** — the Actor drops it. This means a music run can legitimately return fewer rows than URLs you sent in; the node logs a warning (visible in the n8n execution log) when that happens, rather than fabricating an error row for the missing track.
 - The shape of `savedFile` also differs: video's includes `qualityLabel`/`width`/`height`; music's includes `codecs`/`bitrate` instead.
 
+### Large files and n8n memory
+
+Media files are big, and **n8n buffers binary data in memory by default**. Measured against the live Actors, a single 21-minute talk came back at:
+
+| Request | Size |
+| --- | --- |
+| Video, 360p MP4 | 37 MB |
+| Audio, 192 kbps MP3 | 20 MB |
+
+Quality scales that steeply — 1080p is several times the 360p figure, and 2160p can run to the gigabytes. Because **Download File to Binary** defaults to on, a workflow that fans out over many URLs, or pulls one very large video, can exhaust the memory of an n8n instance and fail the execution.
+
+Ways to stay inside the envelope:
+
+- **Switch n8n to filesystem binary mode.** Set `N8N_DEFAULT_BINARY_DATA_MODE=filesystem` (or `s3`) so binary payloads spill to disk instead of living in the process heap. This is the single most effective change for self-hosted instances, and is worth doing before any bulk run.
+- **Cap the quality.** Set **Maximum Quality** to the lowest resolution that meets your need rather than leaving it at Best Available.
+- **Turn off Download File to Binary** when you only need metadata, or when you would rather hand `savedFile.url` to a downstream service and let *it* do the fetching. The URL is pre-signed and works without an Apify token.
+- **Batch modestly.** Prefer several small runs over one run with a long URL list, so peak memory stays bounded.
+
 ## Notes and gotchas
 
 - **`Region` gotcha**: Apify's schema marks `region` as required *and* gives it a default of `US` — not a contradiction, but worth knowing the node ships with both `required: true` and `default: 'US'` simultaneously without issue.
