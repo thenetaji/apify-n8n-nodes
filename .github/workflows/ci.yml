@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+# Cancel in-progress runs for the same branch/PR to avoid wasting CI minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Every workspace under packages/ is linted, built and tested.
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test --workspaces --if-present
+
+      # A runtime dependency in any package would fail n8n's verification review,
+      # so it is cheaper to catch it here than after submitting.
+      - name: Assert no runtime dependencies
+        run: |
+          set -euo pipefail
+          failed=0
+          for pkg in packages/*/package.json; do
+            deps="$(node -p "JSON.stringify(require('./${pkg}').dependencies || {})")"
+            if [ "${deps}" != "{}" ]; then
+              echo "::error file=${pkg}::Verified n8n nodes must have no runtime dependencies, found ${deps}" >&2
+              failed=1
+            fi
+          done
+          exit "${failed}"

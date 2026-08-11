@@ -1,0 +1,14 @@
+{
+	"$schema": "https://unpkg.com/release-it/schema/release-it.json",
+	"npm": {
+		"publish": false
+	},
+	"git": {
+		"commitMessage": "chore(youtube-downloader): release v${version}",
+		"tagName": "youtube-downloader-v${version}",
+		"tagAnnotation": "n8n-nodes-youtube-downloader v${version}"
+	},
+	"github": {
+		"release": false
+	}
+}

@@ -1,0 +1,114 @@
+# Publishes one workspace package to npm, with provenance.
+#
+# Since May 1 2026, n8n requires community nodes submitted for verification to be
+# published via GitHub Actions with an npm provenance statement. Publishing from a
+# local machine is not accepted. Provenance lets anyone cryptographically verify a
+# package was built by this exact workflow, from this exact repository and commit.
+#
+# ─── MONOREPO TAG CONVENTION ───────────────────────────────────────────────────
+#
+# Tags are package-scoped so each package releases independently:
+#
+#   <package-directory>-v<semver>     e.g.  youtube-downloader-v0.1.0
+#
+# The directory is parsed back out of the tag below. A release can also be started
+# manually from the Actions tab via workflow_dispatch.
+#
+# ─── ONE-TIME npm SETUP ────────────────────────────────────────────────────────
+#
+# npm's trusted publishing (OIDC) cannot be configured until a package already
+# exists on the registry, so the FIRST release of any package needs a token:
+#
+#   1. First publish  — npmjs.com > Access Tokens > Granular Access Token, scoped
+#      to the one package with read+write. Add it to this repo as the NPM_TOKEN
+#      secret. Provenance still applies; n8n's requirement is that the publish
+#      happens in CI, not that it is tokenless.
+#   2. Then           — npmjs.com > the package > Settings > Trusted Publishers >
+#      Add: owner `thenetaji`, repo `apify-n8n-nodes`, workflow `publish.yml`.
+#   3. Afterwards     — delete the NPM_TOKEN secret. This workflow needs no edit;
+#      NODE_AUTH_TOKEN simply resolves empty and OIDC takes over.
+
+name: Publish
+
+on:
+  push:
+    tags:
+      - '*-v*.*.*'
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package directory under packages/ to publish'
+        required: true
+        default: 'youtube-downloader'
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Required to mint the OIDC token that signs the provenance attestation.
+      id-token: write
+      # Least privilege: this workflow only reads the repository.
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve package directory
+        id: pkg
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            name="${{ inputs.package }}"
+          else
+            tag="${GITHUB_REF_NAME}"
+            name="${tag%-v*}"
+          fi
+          dir="packages/${name}"
+          if [ ! -f "${dir}/package.json" ]; then
+            echo "::error::No package found at ${dir}" >&2
+            exit 1
+          fi
+          echo "name=${name}" >> "$GITHUB_OUTPUT"
+          echo "dir=${dir}" >> "$GITHUB_OUTPUT"
+          echo "Publishing ${dir}"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Guards against tagging youtube-downloader-v0.2.0 while package.json still
+      # says 0.1.0, which would silently publish the wrong version number.
+      - name: Verify tag matches package version
+        if: github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          pkg_version="$(node -p "require('./${{ steps.pkg.outputs.dir }}/package.json').version")"
+          tag_version="${GITHUB_REF_NAME##*-v}"
+          if [ "${pkg_version}" != "${tag_version}" ]; then
+            echo "::error::Tag version ${tag_version} does not match package.json version ${pkg_version}" >&2
+            exit 1
+          fi
+
+      - name: Lint
+        run: npm run lint --workspace "${{ steps.pkg.outputs.dir }}"
+
+      - name: Build
+        run: npm run build --workspace "${{ steps.pkg.outputs.dir }}"
+
+      - name: Publish to npm with provenance
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # @n8n/node-cli's prepublishOnly hook (`n8n-node prerelease`) refuses to
+          # run `npm publish` unless RELEASE_MODE=true, so that a stray local
+          # publish cannot bypass CI. This workflow is the sanctioned publisher.
+          RELEASE_MODE: 'true'
