@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+	<defs>
+		<linearGradient id="ytsBadgeDark" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#FF5C4F" />
+			<stop offset="1" stop-color="#D4190F" />
+		</linearGradient>
+	</defs>
+	<rect width="48" height="48" rx="8" fill="#333947" />
+	<rect x="8" y="12" width="26" height="19" rx="4.5" fill="url(#ytsBadgeDark)" />
+	<path d="M17.5 16.8 L26.5 21.5 L17.5 26.2 Z" fill="#FFFFFF" />
+	<g transform="translate(26 25)">
+		<circle cx="9" cy="9" r="9.4" fill="#333947" />
+		<circle cx="8.2" cy="8.2" r="5" fill="none" stroke="#FFFFFF" stroke-width="2.2" />
+		<path
+			d="M12 12 L15.8 15.8"
+			fill="none"
+			stroke="#FFFFFF"
+			stroke-width="2.6"
+			stroke-linecap="round"
+		/>
+	</g>
+</svg>

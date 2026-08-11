@@ -1,0 +1,14 @@
+{
+	"$schema": "https://unpkg.com/release-it/schema/release-it.json",
+	"npm": {
+		"publish": false
+	},
+	"git": {
+		"commitMessage": "chore(pinterest): release v${version}",
+		"tagName": "pinterest-v${version}",
+		"tagAnnotation": "n8n-nodes-pinterest v${version}"
+	},
+	"github": {
+		"release": false
+	}
+}

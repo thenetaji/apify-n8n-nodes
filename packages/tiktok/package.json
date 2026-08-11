@@ -1,0 +1,65 @@
+{
+	"name": "n8n-nodes-tiktok",
+	"version": "0.1.0",
+	"description": "n8n community node to run the Apify TikTok Actors — posts, profiles, video downloads, the Ads Library and Top Ads — from your workflows.",
+	"license": "MIT",
+	"homepage": "https://github.com/thenetaji/apify-n8n-nodes/tree/main/packages/tiktok",
+	"keywords": [
+		"n8n-community-node-package",
+		"n8n-nodes",
+		"n8n",
+		"tiktok",
+		"scraper",
+		"ads",
+		"apify"
+	],
+	"author": {
+		"name": "thenetaji",
+		"email": "thenetaji@proton.me",
+		"url": "https://github.com/thenetaji"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/thenetaji/apify-n8n-nodes.git",
+		"directory": "packages/tiktok"
+	},
+	"bugs": {
+		"url": "https://github.com/thenetaji/apify-n8n-nodes/issues"
+	},
+	"engines": {
+		"node": ">=20.15"
+	},
+	"scripts": {
+		"build": "n8n-node build",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"format": "prettier nodes credentials --write",
+		"test": "node --test",
+		"release": "n8n-node release",
+		"prepublishOnly": "n8n-node prerelease"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": true,
+		"credentials": [
+			"dist/credentials/ApifyApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/TikTok/TikTok.node.js"
+		]
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "*",
+		"eslint": "^9.32.0",
+		"prettier": "^3.6.2",
+		"release-it": "^21.0.2",
+		"typescript": "^5.9.2"
+	}
+}

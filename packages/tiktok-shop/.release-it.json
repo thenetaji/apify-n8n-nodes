@@ -1,0 +1,14 @@
+{
+	"$schema": "https://unpkg.com/release-it/schema/release-it.json",
+	"npm": {
+		"publish": false
+	},
+	"git": {
+		"commitMessage": "chore(tiktok-shop): release v${version}",
+		"tagName": "tiktok-shop-v${version}",
+		"tagAnnotation": "n8n-nodes-tiktok-shop v${version}"
+	},
+	"github": {
+		"release": false
+	}
+}

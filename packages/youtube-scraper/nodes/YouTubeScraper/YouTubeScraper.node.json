@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-youtube-scraper",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Data & Storage", "Marketing"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://github.com/thenetaji/apify-n8n-nodes/tree/main/packages/youtube-scraper#connect-your-apify-account"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/thenetaji/apify-n8n-nodes/tree/main/packages/youtube-scraper#readme"
+			}
+		]
+	}
+}
