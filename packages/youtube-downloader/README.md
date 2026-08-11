@@ -4,6 +4,8 @@ Download YouTube videos and music inside your n8n workflows, and send the files 
 
 No code, no scraping setup, no server of your own. Paste a link, pick a quality, and the finished file arrives in your workflow ready to use.
 
+**Who it's for:** content and social teams archiving video, podcasters pulling audio, researchers collecting clips, and anyone feeding transcripts to an AI step. If you can build an n8n workflow, you can use this — nothing here needs code.
+
 ## What you can build with it
 
 - **Archive a channel to Google Drive** — every new upload saved automatically, the moment it goes live.
@@ -22,7 +24,14 @@ n8n-nodes-youtube-downloader
 
 Tick the box to acknowledge the risks of community nodes, and select **Install**. The **YouTube Downloader** node then appears in your node list — search for "YouTube Downloader" when adding a node to a workflow.
 
-If you're on n8n Cloud and don't see the install option, your plan or instance settings may not have community nodes enabled yet. n8n's [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) covers both Cloud and self-hosted setups.
+> **Self-hosted n8n only, for now.** n8n Cloud can install community nodes that n8n has reviewed and marked as verified. This node hasn't been through that review yet, so it currently works on self-hosted n8n only. n8n's [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) explains the difference.
+
+## Requirements
+
+- **Self-hosted n8n**, version 1.x or newer (see the note above about Cloud).
+- **An Apify account** with access to the two downloader Actors. Setup is below and takes about a minute.
+- **Public YouTube links.** Private, unlisted, members-only, and paid content won't work.
+- **Room for the files.** Videos can be large — see [Keeping file sizes sensible](#keeping-file-sizes-sensible) before running big batches.
 
 ## Connect your Apify account
 
