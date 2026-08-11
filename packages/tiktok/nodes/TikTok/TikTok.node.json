@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-tiktok",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Data & Storage", "Marketing"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://github.com/thenetaji/apify-n8n-nodes/tree/main/packages/tiktok#connect-your-apify-account"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/thenetaji/apify-n8n-nodes/tree/main/packages/tiktok#readme"
+			}
+		]
+	}
+}

@@ -8,9 +8,18 @@ work happens on Apify's infrastructure while the results flow straight into your
 
 ## Packages
 
-| Package | Node | Actors |
-| --- | --- | --- |
-| [`n8n-nodes-youtube-downloader`](packages/youtube-downloader) | YouTube Downloader | `thenetaji/youtube-video-downloader`, `thenetaji/youtube-music-downloader` |
+| Package | Node | Operations | Covers |
+| --- | --- | --- | --- |
+| [`n8n-nodes-tiktok-shop`](packages/tiktok-shop) | TikTok Shop | 12 | Products, reviews, review insights, listing health, creator videos, recommendations, search, search insights, sellers, categories, trending |
+| [`n8n-nodes-youtube-scraper`](packages/youtube-scraper) | YouTube Scraper | 12 | Video details, comments, transcripts, channels, playlists, search, trending, hype, home feed, suggestions |
+| [`n8n-nodes-youtube-downloader`](packages/youtube-downloader) | YouTube Downloader | 2 | Video and music downloads |
+| [`n8n-nodes-pinterest`](packages/pinterest) | Pinterest | 5 | Pins, profiles, boards, board pins, keyword search |
+| [`n8n-nodes-tiktok`](packages/tiktok) | TikTok | 8 | Posts, profiles, video downloads, Ads Library, Top Ads |
+
+Between them these nodes cover **31 Apify Actors** across 39 operations. Each operation runs one
+purpose-built Actor rather than a general-purpose one, so a run only does the work you asked for —
+the all-in-one Actors are deliberately not exposed, since every mode they offer is reachable through
+a cheaper dedicated Actor.
 
 ## Installing a node
 
@@ -24,28 +33,48 @@ Every node authenticates with an **Apify API token**, which you can create at
 
 ## Repository layout
 
-This is an npm workspaces monorepo. Each directory under `packages/` is an independently
-versioned and published npm package with its own `README`, and declares its subpath via the
-`repository.directory` field so npm provenance resolves correctly.
+A pnpm monorepo. Each directory under `packages/` is an independently versioned and published
+npm package with its own `README`, and declares its subpath via the `repository.directory` field
+so npm provenance resolves correctly.
 
 ```
 packages/
+  tiktok-shop/           → n8n-nodes-tiktok-shop
+  tiktok/                → n8n-nodes-tiktok
+  pinterest/             → n8n-nodes-pinterest
+  youtube-scraper/       → n8n-nodes-youtube-scraper
   youtube-downloader/    → n8n-nodes-youtube-downloader
 ```
 
+Every package declares the same `apifyApi` credential, with the same shape, so one saved Apify
+token works across all of them instead of one credential per installed package.
+
+Inside a package, the Actor mapping lives in `nodes/<Node>/operations.ts` as a plain registry: each
+operation names its Actor, the fields it forwards, and any input it pins itself. The node's
+`displayOptions` are derived from that registry, so the UI cannot drift out of step with the Actors.
+`helpers.ts` and `operations.ts` are both import-free, which lets `node --test` load them directly
+under Node's native TypeScript support.
+
 ## Development
 
+Each package carries its own toolchain, so work inside the package you are changing:
+
 ```bash
-npm install           # install all workspaces
-npm run build         # build every package
-npm run lint          # lint every package
+cd packages/tiktok-shop
+pnpm install          # add --ignore-scripts if the native deps fail to build
+pnpm run build        # compile to dist/
+pnpm run lint         # n8n community-node lint
+pnpm test             # unit tests for the pure helpers
 ```
+
+The root `build`/`lint` scripts still target npm workspaces and do not run in this layout; use the
+per-package commands above.
 
 To work on a single package with a live n8n instance:
 
 ```bash
 cd packages/youtube-downloader
-npm run dev           # starts n8n at http://localhost:5678 with the node loaded
+pnpm run dev          # starts n8n at http://localhost:5678 with the node loaded
 ```
 
 ## Publishing
