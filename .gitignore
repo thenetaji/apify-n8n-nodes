@@ -2,6 +2,12 @@ node_modules/
 dist/
 *.tsbuildinfo
 
+# `n8n-node dev` runs n8n through pnpm and drops these into the repo. This is an
+# npm-workspaces monorepo, so they are throwaway local state. It also strips the
+# root "workspaces" field while running — restore it with `git checkout` after.
+pnpm-lock.yaml
+pnpm-workspace.yaml
+
 # Local credentials — never commit an Apify token
 .env
 .env.*

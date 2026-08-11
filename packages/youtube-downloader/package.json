@@ -27,7 +27,6 @@
 	"engines": {
 		"node": ">=20.15"
 	},
-	"main": "index.js",
 	"scripts": {
 		"build": "n8n-node build",
 		"dev": "n8n-node dev",

@@ -6,12 +6,12 @@
 	"resources": {
 		"credentialDocumentation": [
 			{
-				"url": "https://github.com/thenetaji/n8n-nodes-youtube-downloader#credentials"
+				"url": "https://github.com/thenetaji/apify-n8n-nodes/tree/main/packages/youtube-downloader#connect-your-apify-account"
 			}
 		],
 		"primaryDocumentation": [
 			{
-				"url": "https://github.com/thenetaji/n8n-nodes-youtube-downloader#readme"
+				"url": "https://github.com/thenetaji/apify-n8n-nodes/tree/main/packages/youtube-downloader#readme"
 			}
 		]
 	}
