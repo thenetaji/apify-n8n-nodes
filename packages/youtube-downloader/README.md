@@ -40,7 +40,7 @@ The downloading itself runs on [Apify](https://apify.com?fpr=bucho&fp_sid=n8n), 
 1. Create a free account at [apify.com](https://apify.com?fpr=bucho&fp_sid=n8n) if you don't have one.
 2. Go to [Apify Console → Settings → Integrations](https://console.apify.com/settings/integrations).
 3. Copy your **Personal API token**.
-4. Back in n8n, add a new **Apify API** credential and paste the token in.
+4. Back in n8n, add a new **Apify API** credential and paste the token into **API Key**.
 5. Select **Test credential**. A green tick means you're connected.
 
 Both downloaders are paid Actors on Apify — current pricing is on the [Video Downloader](https://apify.com/thenetaji/youtube-video-downloader?fpr=bucho&fp_sid=n8n) and [Music Downloader](https://apify.com/thenetaji/youtube-music-downloader?fpr=bucho&fp_sid=n8n) pages. If your account doesn't have access yet, the node tells you so directly rather than failing silently.
@@ -180,6 +180,7 @@ The package has **zero runtime dependencies** — every request goes through n8n
 
 ## Version history
 
+- **0.2.0** — the Apify credential field is now **API Key**, matching the shape Apify publishes, so one saved credential works across every Apify node. Re-enter your token if you saved it under 0.1.x.
 - **0.1.1** — documentation only: Apify links are now referral links.
 **0.1.0** — First release. Video and music downloads, transcripts and subtitles, files attached directly as n8n binary data, and support for continuing past failed items.
 

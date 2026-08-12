@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-tiktok-shop-apify",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"description": "n8n community node to run the Apify TikTok Shop Actors — products, reviews, sellers, categories, search and trending — from your workflows.",
 	"license": "MIT",
 	"homepage": "https://github.com/thenetaji/apify-n8n-nodes/tree/main/packages/tiktok-shop",

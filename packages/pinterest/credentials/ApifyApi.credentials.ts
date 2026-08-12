@@ -29,10 +29,17 @@ export class ApifyApi implements ICredentialType {
 		dark: 'file:../nodes/Pinterest/pinterest.dark.svg',
 	};
 
+	/**
+	 * The property is named `apiKey` and the credential type `apifyApi` to match
+	 * the shape Apify publishes in n8n-nodes-apify and its Actor node template.
+	 * n8n registers one credential type per name across every installed package,
+	 * so a differently-shaped `apifyApi` here would resolve to an empty token for
+	 * whichever package lost the race, and send `Bearer ` with nothing after it.
+	 */
 	properties: INodeProperties[] = [
 		{
-			displayName: 'API Token',
-			name: 'token',
+			displayName: 'API Key',
+			name: 'apiKey',
 			type: 'string',
 			typeOptions: { password: true },
 			default: '',
@@ -46,7 +53,7 @@ export class ApifyApi implements ICredentialType {
 		type: 'generic',
 		properties: {
 			headers: {
-				Authorization: '=Bearer {{$credentials.token}}',
+				Authorization: '=Bearer {{$credentials.apiKey}}',
 			},
 		},
 	};

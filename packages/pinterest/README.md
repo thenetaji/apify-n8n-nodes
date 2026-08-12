@@ -35,7 +35,7 @@ self-hosted and Cloud specifics.
 
 1. Sign in to the [Apify Console](https://console.apify.com).
 2. Open **Settings → Integrations** and copy your **Personal API token**.
-3. In n8n, add a new **Apify API** credential and paste the token in.
+3. In n8n, add a new **Apify API** credential and paste the token into **API Key**.
 
 The same credential works for every Apify node in this repo, so you only enter the token once.
 
@@ -153,6 +153,7 @@ step with the Actors.
 
 ## Version history
 
+- **0.2.0** — the Apify credential field is now **API Key**, matching the shape Apify publishes, so one saved credential works across every Apify node. Re-enter your token if you saved it under 0.1.x.
 - **0.1.1** — documentation only: Apify links are now referral links.
 - **0.1.0** — first release: 5 operations across Pin, Profile, Board and Search.
 
