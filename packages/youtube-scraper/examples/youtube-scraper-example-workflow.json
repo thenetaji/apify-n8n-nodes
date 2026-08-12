@@ -1,9 +1,9 @@
 {
-  "name": "Summarise a YouTube channel's new uploads with AI every morning",
+  "name": "Track a YouTube channel's new uploads, with optional AI summaries",
   "nodes": [
     {
       "parameters": {
-        "content": "## Summarise a channel's new uploads every morning\n\n### How it works\n\nEvery morning this reads the latest uploads from a YouTube channel, takes the newest three, pulls each video's transcript, and has an LLM write a short summary of what the video actually teaches.\n\nThe summary is written to a Google Sheet keyed on the video ID, and posted to Slack. The model reads the transcript text the Actor already extracted, so it never touches the video and the whole thing costs a fraction of a video-understanding call.\n\nPoint it at a competitor to see what they are publishing, or at your own channel to generate descriptions and show notes.\n\n### The sheet\n\n`videoId` is the key the upsert matches on, so a re-run never writes the same video twice.\n\n### Setup\n\n1. Install `n8n-nodes-youtube-scraper-apify` from **Settings \u2192 Community nodes**.\n2. Add an **Apify API** credential \u2014 free account at [apify.com](https://apify.com?fpr=bucho&fp_sid=n8n). On n8n Cloud you can use **OAuth2** instead and skip the token.\n3. Connect Google Sheets, Slack and an OpenAI key.\n4. Point the Sheets node at your spreadsheet and pick a Slack channel.\n5. Run once by hand, check the sheet, then enable the schedule.",
+        "content": "## Track a channel's new uploads every morning\n\n### How it works\n\nEvery morning this reads the latest uploads from a YouTube channel, takes the newest three, and pulls each video's transcript. Everything lands in a Google Sheet keyed on the video ID, and gets posted to Slack.\n\n**AI summaries are optional.** The two AI nodes ship switched off, so the workflow runs on Apify, Sheets and Slack alone. Enable *Summarise the video* and *OpenAI Chat Model* to have a model turn each transcript into a short brief \u2014 it reads the text the Actor already extracted, so it never touches the video and costs a fraction of a vision call.\n\nPoint it at a competitor to see what they are publishing, or at your own channel to generate descriptions and show notes.\n\n### The sheet\n\n`videoId` is the key the upsert matches on, so a re-run never writes the same video twice.\n\n### Setup\n\n1. Install `n8n-nodes-youtube-scraper-apify` from **Settings \u2192 Community nodes**.\n2. Add an **Apify API** credential \u2014 free account at [apify.com](https://apify.com?fpr=bucho&fp_sid=n8n). On n8n Cloud you can use **OAuth2** instead and skip the token.\n3. Connect Google Sheets and Slack. An OpenAI key is only needed if you enable the summary nodes.\n4. Point the Sheets node at your spreadsheet and pick a Slack channel.\n5. Run once by hand, check the sheet, then enable the schedule.",
         "width": 470,
         "height": 880
       },
@@ -34,7 +34,7 @@
     },
     {
       "parameters": {
-        "content": "### Transcript in, summary out\n\nThe transcript arrives as plain text on `text`, which is exactly what the model needs. No audio, no video, no vision model.",
+        "content": "### Transcript in\n\nThe transcript arrives as plain text on `text` \u2014 readable on its own, and exactly what a model needs if you switch the summary on.",
         "width": 640,
         "height": 280,
         "color": 4
@@ -137,7 +137,10 @@
         320
       ],
       "id": "e5000000-0000-4000-8000-000000000005",
-      "name": "Summarise the video"
+      "name": "Summarise the video",
+      "disabled": true,
+      "notes": "Optional. Enable this and the model below to add AI summaries.",
+      "notesInFlow": true
     },
     {
       "parameters": {
@@ -156,7 +159,8 @@
         520
       ],
       "id": "e6000000-0000-4000-8000-000000000006",
-      "name": "OpenAI Chat Model"
+      "name": "OpenAI Chat Model",
+      "disabled": true
     },
     {
       "parameters": {
@@ -181,7 +185,7 @@
             "url": "={{ $('Get the transcript').item.json.url }}",
             "views": "={{ $('Newest three').item.json.viewCount }}",
             "published": "={{ $('Newest three').item.json.publishedAt }}",
-            "summary": "={{ $json.text }}"
+            "summary": "={{ $('Summarise the video').isExecuted ? $json.text : '' }}"
           },
           "matchingColumns": [
             "videoId"
@@ -210,7 +214,7 @@
           "mode": "name",
           "cachedResultName": "#content"
         },
-        "text": "=*{{ $('Newest three').item.json.title }}*\n{{ $('Get the transcript').item.json.url }}\n\n{{ $('Summarise the video').item.json.text }}",
+        "text": "=*{{ $('Newest three').item.json.title }}*\n{{ $('Get the transcript').item.json.url }}\n\n{{ $('Summarise the video').isExecuted ? $('Summarise the video').item.json.text : 'Summary skipped \u2014 enable the AI nodes to add one.' }}",
         "otherOptions": {}
       },
       "type": "n8n-nodes-base.slack",
