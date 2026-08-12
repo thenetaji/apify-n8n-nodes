@@ -20,19 +20,36 @@
 # exists on the registry, so the FIRST release of any package needs a token:
 #
 #   1. First publish  — npmjs.com > Access Tokens > Generate New Token >
-#      *Classic Token* > *Automation*. Add it to this repo as the NPM_TOKEN
-#      secret. Provenance still applies; n8n's requirement is that the publish
-#      happens in CI, not that it is tokenless.
+#      *Granular Access Token*, with all three of these:
 #
-#      It must be an Automation token. A Granular Access Token is still subject
-#      to the account's 2FA and fails a CI publish with `npm error code EOTP —
-#      This operation requires a one-time password`, after provenance has
-#      already been signed. Automation tokens are the only token type that
-#      bypasses the OTP prompt for non-interactive publishing.
+#        - Permissions:       Read and write
+#        - Packages and scopes: **All packages**
+#        - Bypass 2FA:        enabled
+#
+#      Add it to this repo as the NPM_TOKEN secret. Provenance still applies;
+#      n8n's requirement is that the publish happens in CI, not that it is
+#      tokenless.
+#
+#      "All packages" is the part that is easy to get wrong. A first publish
+#      *creates* the package, and a token scoped to "only select packages" can
+#      only name packages that already exist — so a package-scoped token cannot
+#      bootstrap a new name, and npm rejects the PUT with:
+#
+#        npm error code E403 — Two-factor authentication or granular access
+#        token with bypass 2fa enabled is required to publish packages.
+#
+#      If the account still requires 2FA for writes, the same publish instead
+#      fails with `npm error code EOTP`, after provenance has already been
+#      signed. Set the account to 2FA "auth-only" (npm profile get will confirm
+#      it) so a token can publish without an interactive one-time password.
 #   2. Then           — npmjs.com > the package > Settings > Trusted Publishers >
 #      Add: owner `thenetaji`, repo `apify-n8n-nodes`, workflow `publish.yml`.
+#      This only becomes possible once the package exists, which is the whole
+#      reason step 1 needs a token at all.
 #   3. Afterwards     — delete the NPM_TOKEN secret. This workflow needs no edit;
-#      NODE_AUTH_TOKEN simply resolves empty and OIDC takes over.
+#      NODE_AUTH_TOKEN simply resolves empty and OIDC takes over. npm is
+#      actively deprecating 2FA-bypass tokens for direct publishing, so moving
+#      to OIDC is not optional for long.
 
 name: Publish
 

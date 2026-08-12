@@ -1,0 +1,104 @@
+{
+  "name": "YouTube Downloader — video, MP3 and transcript",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## YouTube Downloader — video, MP3 and transcript\n\n### How it works\n\nA manual trigger fans out to two YouTube Downloader nodes that run in parallel, so one click produces both a video file and an audio file from the same source.\n\nThe video branch runs the Apify **YouTube Video Downloader** Actor, saves a playable 720p MP4, and attaches the English transcript alongside it. The audio branch runs the **YouTube Music Downloader** Actor and returns an MP3.\n\nBoth branches pull the finished file back from Apify and attach it to the item's `data` binary property, so the very next node can upload it straight to Google Drive, S3 or Telegram.\n\n### Setup steps\n\n1. **Settings → Community nodes → Install** and enter `n8n-nodes-youtube-downloader`.\n2. Create a free [Apify account](https://console.apify.com/sign-up) and copy your personal API token from **Settings → Integrations**.\n3. Add a new **Apify API** credential in n8n, paste the token, and select it on both downloader nodes.\n4. Replace the two example URLs with your own, then click **Test workflow**.\n\n### Customization\n\n- **Maximum Quality** accepts 144p through 4320p, and **File Format** MP4, WebM or MKV.\n- **Audio Format** switches between MP3, M4A and WebM.\n- **Subtitle Language** takes any language code, such as `es` or `pt-BR`. Turn **Add Transcript** off if you do not need it.\n- Turn **Save Playable Files** off to get metadata and expiring direct links without paying for storage.\n- Feed URLs from a Google Sheet instead of the hard-coded example to process many videos in one run.",
+        "width": 480,
+        "height": 784
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-864, -16],
+      "id": "f00689f6-bb72-47d0-85b1-8c2f9ccd944c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Manual media downloads\n\nThe manual trigger starts two YouTube Downloader branches in parallel: one saves a 720p MP4 with an English transcript, the other an MP3. Each attaches its file as binary on the `data` property.\n\nBoth nodes need the same **Apify API** credential.",
+        "width": 496,
+        "height": 624,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-304, -16],
+      "id": "5fb7bc2b-5802-4e8c-8701-541a1ac7eda6",
+      "name": "Sticky Note1"
+    },
+    {
+      "id": "5c1f0a52-6b21-4a0e-9d2b-1f7c0a3d4e10",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [-260, 300],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "9a4d7e13-0c58-4b6f-8a21-3d5e6f7a8b90",
+      "name": "Download Video as 720p MP4",
+      "type": "n8n-nodes-youtube-downloader.youTubeDownloader",
+      "notes": "Saves a playable 720p MP4 and attaches it as binary on the 'data' property, ready for Google Drive, S3 or Telegram. Also attaches the English transcript.",
+      "position": [40, 160],
+      "parameters": {
+        "urls": "https://www.youtube.com/watch?v=arj7oStGLkU",
+        "format": "mp4",
+        "region": "US",
+        "options": {},
+        "quality": "720",
+        "resource": "video",
+        "operation": "downloadVideo",
+        "saveMedia": true,
+        "downloadToBinary": true,
+        "subtitleLanguage": "en",
+        "includeTranscript": true,
+        "binaryPropertyName": "data"
+      },
+      "notesInFlow": true,
+      "typeVersion": 1
+    },
+    {
+      "id": "c2b8f640-77a9-4e31-95cd-2a4b6c8d0e11",
+      "name": "Download Audio as MP3",
+      "type": "n8n-nodes-youtube-downloader.youTubeDownloader",
+      "notes": "Rips the same track as an MP3 and attaches it as binary on the 'data' property.",
+      "position": [40, 440],
+      "parameters": {
+        "urls": "https://music.youtube.com/watch?v=arj7oStGLkU",
+        "region": "US",
+        "options": {},
+        "resource": "music",
+        "operation": "downloadMusic",
+        "audioFormat": "mp3",
+        "downloadToBinary": true,
+        "subtitleLanguage": "",
+        "includeTranscript": false,
+        "binaryPropertyName": "data"
+      },
+      "notesInFlow": true,
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download Video as 720p MP4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download Audio as MP3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
