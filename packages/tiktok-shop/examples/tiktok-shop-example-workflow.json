@@ -1,0 +1,98 @@
+{
+  "name": "TikTok Shop \u2014 product details and ranked review insights",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## TikTok Shop \u2014 product research\n\n### How it works\n\nA manual trigger fetches a TikTok Shop product page, then feeds that product's ID into a second node that reads a sample of its reviews and ranks what buyers actually praise and complain about.\n\nThe first node returns price, variants, shop profile and the rating breakdown. The second returns `pain_points` and `praise_points` already ranked, plus a `verdict_summary` \u2014 a short, structured input for an LLM instead of a thousand raw reviews.\n\n### Setup steps\n\n1. **Settings \u2192 Community nodes \u2192 Install** and enter `n8n-nodes-tiktok-shop-apify`.\n2. Create a free [Apify account](https://apify.com?fpr=bucho&fp_sid=n8n) and copy your API token from **Settings \u2192 Integrations**.\n3. Add an **Apify API** credential in n8n and select it on both nodes.\n4. Paste your own product link into **Products** and click **Test workflow**.\n\n### Customization\n\n- **Region** switches storefront: US, UK, Singapore, Malaysia, Philippines, Thailand, Vietnam, Japan or Mexico. It changes the actual products and prices, not just the language.\n- **Review Sample Size** trades depth for cost; set `0` to skip review analysis.\n- Swap the second node to **Get Reviews** for one row per review instead of a ranked summary.\n- Append a **Google Sheets** node to log price and rating on a schedule.",
+        "width": 480,
+        "height": 700
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        -40
+      ],
+      "id": "aaaaaaaa-0000-4000-8000-000000000001",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        300
+      ],
+      "id": "bbbbbbbb-0000-4000-8000-000000000002",
+      "name": "Manual Trigger"
+    },
+    {
+      "id": "cccccccc-0000-4000-8000-000000000003",
+      "name": "Get Product Details",
+      "type": "n8n-nodes-tiktok-shop-apify.tikTokShop",
+      "typeVersion": 1,
+      "position": [
+        40,
+        300
+      ],
+      "parameters": {
+        "resource": "product",
+        "operation": "productDetails",
+        "productIds": "https://shop.tiktok.com/us/pdp/1730927783781307026",
+        "region": "US",
+        "options": {}
+      },
+      "notes": "Returns price, variants, shop profile, category path and the rating breakdown.",
+      "notesInFlow": true
+    },
+    {
+      "id": "dddddddd-0000-4000-8000-000000000004",
+      "name": "Get Review Insights",
+      "type": "n8n-nodes-tiktok-shop-apify.tikTokShop",
+      "typeVersion": 1,
+      "position": [
+        360,
+        300
+      ],
+      "parameters": {
+        "resource": "product",
+        "operation": "productReviewInsights",
+        "productIds": "={{ $json.product_id }}",
+        "region": "US",
+        "reviewSampleSize": 100,
+        "options": {}
+      },
+      "notes": "Reads the product_id from the previous node and ranks buyer pain points and praise.",
+      "notesInFlow": true
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Product Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Product Details": {
+      "main": [
+        [
+          {
+            "node": "Get Review Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

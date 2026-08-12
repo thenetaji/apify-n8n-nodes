@@ -1,0 +1,100 @@
+{
+  "name": "TikTok \u2014 competitor ad research and watermark-free downloads",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## TikTok \u2014 ads research and downloads\n\n### How it works\n\nOne manual trigger drives two independent branches. The first searches TikTok's public Ads Library for a brand, product or phrase and returns one row per ad, with advertiser, region and the dates it ran. The second downloads a TikTok video without its watermark and attaches the file as binary data.\n\nBecause the download branch emits binary on the `data` property, the very next node can be Google Drive, S3 or Telegram with no conversion step.\n\n### Setup steps\n\n1. **Settings \u2192 Community nodes \u2192 Install** and enter `n8n-nodes-tiktok-apify`.\n2. Create a free [Apify account](https://apify.com?fpr=bucho&fp_sid=n8n) and copy your API token from **Settings \u2192 Integrations**.\n3. Add an **Apify API** credential in n8n and select it on both nodes.\n4. Replace the search query and the video URL with your own, then click **Test workflow**.\n\n### Customization\n\n- **Search Type** switches between free text, advertiser, keyword and exact phrase. Choose *Advertiser* to track one brand.\n- **Country** picks the Ads Library market, such as GB, DE, FR or ES.\n- **Video Quality** and **Output Format** control the download; raise **Delay Between Downloads** when fetching many videos.\n- Swap the ads node for **Get Top Ads** to rank Creative Center ads by reach, CTR or CVR instead.\n\n> Post and profile scraping need at least **four URLs** \u2014 those Actors batch their requests.",
+        "width": 480,
+        "height": 700
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        -40
+      ],
+      "id": "aaaaaaaa-0000-4000-8000-000000000001",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        300
+      ],
+      "id": "bbbbbbbb-0000-4000-8000-000000000002",
+      "name": "Manual Trigger"
+    },
+    {
+      "id": "cccccccc-0000-4000-8000-000000000013",
+      "name": "Search Ads Library",
+      "type": "n8n-nodes-tiktok-apify.tikTok",
+      "typeVersion": 1,
+      "position": [
+        40,
+        160
+      ],
+      "parameters": {
+        "resource": "ad",
+        "operation": "adsLibrary",
+        "adsQuery": "running shoes",
+        "searchType": "free_text",
+        "adsRegion": "GB",
+        "adsSort": "last_shown_desc",
+        "returnAll": false,
+        "limit": 10,
+        "enrichAdDetails": false,
+        "adsFilters": {},
+        "options": {}
+      },
+      "notes": "One row per ad: advertiser, region, and the dates the ad ran.",
+      "notesInFlow": true
+    },
+    {
+      "id": "dddddddd-0000-4000-8000-000000000014",
+      "name": "Download Video",
+      "type": "n8n-nodes-tiktok-apify.tikTok",
+      "typeVersion": 1,
+      "position": [
+        40,
+        440
+      ],
+      "parameters": {
+        "resource": "video",
+        "operation": "videoDownload",
+        "urls": "https://www.tiktok.com/@nikolaisavic/video/7609823185772580118",
+        "quality": "best",
+        "format": "mp4",
+        "downloadToBinary": true,
+        "binaryPropertyName": "data",
+        "options": {}
+      },
+      "notes": "Downloads without a watermark and attaches the file as binary on 'data'.",
+      "notesInFlow": true
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search Ads Library",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
