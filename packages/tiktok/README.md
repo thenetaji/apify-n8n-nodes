@@ -8,7 +8,7 @@ The node runs [Apify Actors](https://apify.com/thenetaji) published by
 land in your workflow as ordinary n8n items.
 
 > Selling on TikTok Shop? Products, reviews and sellers live in a separate package:
-> [`n8n-nodes-tiktok-shop`](https://github.com/thenetaji/apify-n8n-nodes/tree/main/packages/tiktok-shop).
+> [`n8n-nodes-tiktok-shop-apify`](https://github.com/thenetaji/apify-n8n-nodes/tree/main/packages/tiktok-shop).
 
 ## What you can build with it
 
@@ -22,7 +22,7 @@ land in your workflow as ordinary n8n items.
 In n8n, go to **Settings → Community nodes → Install** and enter:
 
 ```
-n8n-nodes-tiktok
+n8n-nodes-tiktok-apify
 ```
 
 See n8n's [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) for

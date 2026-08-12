@@ -1,5 +1,5 @@
 {
-	"name": "n8n-nodes-tiktok",
+	"name": "n8n-nodes-tiktok-apify",
 	"version": "0.1.0",
 	"description": "n8n community node to run the Apify TikTok Actors — posts, profiles, video downloads, the Ads Library and Top Ads — from your workflows.",
 	"license": "MIT",

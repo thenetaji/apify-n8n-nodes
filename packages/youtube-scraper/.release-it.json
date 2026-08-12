@@ -6,7 +6,7 @@
 	"git": {
 		"commitMessage": "chore(youtube-scraper): release v${version}",
 		"tagName": "youtube-scraper-v${version}",
-		"tagAnnotation": "n8n-nodes-youtube-scraper v${version}"
+		"tagAnnotation": "n8n-nodes-youtube-scraper-apify v${version}"
 	},
 	"github": {
 		"release": false

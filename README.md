@@ -10,11 +10,11 @@ work happens on Apify's infrastructure while the results flow straight into your
 
 | Package | Node | Operations | Covers |
 | --- | --- | --- | --- |
-| [`n8n-nodes-tiktok-shop`](packages/tiktok-shop) | TikTok Shop | 12 | Products, reviews, review insights, listing health, creator videos, recommendations, search, search insights, sellers, categories, trending |
-| [`n8n-nodes-youtube-scraper`](packages/youtube-scraper) | YouTube Scraper | 12 | Video details, comments, transcripts, channels, playlists, search, trending, hype, home feed, suggestions |
+| [`n8n-nodes-tiktok-shop-apify`](packages/tiktok-shop) | TikTok Shop | 12 | Products, reviews, review insights, listing health, creator videos, recommendations, search, search insights, sellers, categories, trending |
+| [`n8n-nodes-youtube-scraper-apify`](packages/youtube-scraper) | YouTube Scraper | 12 | Video details, comments, transcripts, channels, playlists, search, trending, hype, home feed, suggestions |
 | [`n8n-nodes-youtube-downloader`](packages/youtube-downloader) | YouTube Downloader | 2 | Video and music downloads |
-| [`n8n-nodes-pinterest`](packages/pinterest) | Pinterest | 5 | Pins, profiles, boards, board pins, keyword search |
-| [`n8n-nodes-tiktok`](packages/tiktok) | TikTok | 8 | Posts, profiles, video downloads, Ads Library, Top Ads |
+| [`n8n-nodes-pinterest-apify`](packages/pinterest) | Pinterest | 5 | Pins, profiles, boards, board pins, keyword search |
+| [`n8n-nodes-tiktok-apify`](packages/tiktok) | TikTok | 8 | Posts, profiles, video downloads, Ads Library, Top Ads |
 
 Between them these nodes cover **31 Apify Actors** across 39 operations. Each operation runs one
 purpose-built Actor rather than a general-purpose one, so a run only does the work you asked for —
@@ -39,10 +39,10 @@ so npm provenance resolves correctly.
 
 ```
 packages/
-  tiktok-shop/           → n8n-nodes-tiktok-shop
-  tiktok/                → n8n-nodes-tiktok
-  pinterest/             → n8n-nodes-pinterest
-  youtube-scraper/       → n8n-nodes-youtube-scraper
+  tiktok-shop/           → n8n-nodes-tiktok-shop-apify
+  tiktok/                → n8n-nodes-tiktok-apify
+  pinterest/             → n8n-nodes-pinterest-apify
+  youtube-scraper/       → n8n-nodes-youtube-scraper-apify
   youtube-downloader/    → n8n-nodes-youtube-downloader
 ```
 

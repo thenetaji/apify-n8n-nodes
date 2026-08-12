@@ -6,7 +6,7 @@
 	"git": {
 		"commitMessage": "chore(pinterest): release v${version}",
 		"tagName": "pinterest-v${version}",
-		"tagAnnotation": "n8n-nodes-pinterest v${version}"
+		"tagAnnotation": "n8n-nodes-pinterest-apify v${version}"
 	},
 	"github": {
 		"release": false

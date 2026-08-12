@@ -1,5 +1,5 @@
 {
-	"name": "n8n-nodes-youtube-scraper",
+	"name": "n8n-nodes-youtube-scraper-apify",
 	"version": "0.1.0",
 	"description": "n8n community node to run the Apify YouTube scraping Actors — videos, channels, playlists, comments, transcripts and search — from your workflows.",
 	"license": "MIT",

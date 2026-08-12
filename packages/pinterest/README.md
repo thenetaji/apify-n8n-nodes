@@ -19,7 +19,7 @@ land in your workflow as ordinary n8n items.
 In n8n, go to **Settings → Community nodes → Install** and enter:
 
 ```
-n8n-nodes-pinterest
+n8n-nodes-pinterest-apify
 ```
 
 See n8n's [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) for

@@ -6,7 +6,7 @@
 	"git": {
 		"commitMessage": "chore(tiktok): release v${version}",
 		"tagName": "tiktok-v${version}",
-		"tagAnnotation": "n8n-nodes-tiktok v${version}"
+		"tagAnnotation": "n8n-nodes-tiktok-apify v${version}"
 	},
 	"github": {
 		"release": false
