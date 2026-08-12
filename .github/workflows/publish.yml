@@ -19,10 +19,16 @@
 # npm's trusted publishing (OIDC) cannot be configured until a package already
 # exists on the registry, so the FIRST release of any package needs a token:
 #
-#   1. First publish  — npmjs.com > Access Tokens > Granular Access Token, scoped
-#      to the one package with read+write. Add it to this repo as the NPM_TOKEN
+#   1. First publish  — npmjs.com > Access Tokens > Generate New Token >
+#      *Classic Token* > *Automation*. Add it to this repo as the NPM_TOKEN
 #      secret. Provenance still applies; n8n's requirement is that the publish
 #      happens in CI, not that it is tokenless.
+#
+#      It must be an Automation token. A Granular Access Token is still subject
+#      to the account's 2FA and fails a CI publish with `npm error code EOTP —
+#      This operation requires a one-time password`, after provenance has
+#      already been signed. Automation tokens are the only token type that
+#      bypasses the OTP prompt for non-interactive publishing.
 #   2. Then           — npmjs.com > the package > Settings > Trusted Publishers >
 #      Add: owner `thenetaji`, repo `apify-n8n-nodes`, workflow `publish.yml`.
 #   3. Afterwards     — delete the NPM_TOKEN secret. This workflow needs no edit;
