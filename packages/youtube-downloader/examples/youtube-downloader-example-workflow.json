@@ -1,9 +1,9 @@
 {
-  "name": "Archive a YouTube queue to Google Drive with AI summaries",
+  "name": "Archive a YouTube queue to Google Drive, with optional AI summaries",
   "nodes": [
     {
       "parameters": {
-        "content": "## Archive a YouTube queue to Drive, with AI summaries\n\n### How it works\n\nEvery morning this reads a Google Sheet used as a work queue, picks up only the rows that have not been archived yet, and for each one downloads the video, uploads the file to Google Drive, summarises the transcript with an LLM, writes the Drive link and the summary back to the same row, and posts a note to Slack.\n\nThe transcript is what makes the summary cheap: the model reads text the Actor already extracted, so it never touches the video itself.\n\n### The sheet\n\nOne row per video, with these column headers:\n\n`URL` \u2014 the YouTube link\n`Status` \u2014 leave empty; the workflow writes `Archived`\n`Drive link` \u2014 filled in by the workflow\n`Summary` \u2014 filled in by the workflow\n\nRows whose **Status** is already filled are skipped, so the workflow is safe to run daily and will never re-download the same video.\n\n### Setup\n\n1. Install `n8n-nodes-youtube-downloader`.\n2. Add an **Apify API** credential \u2014 free account at [apify.com](https://apify.com?fpr=bucho&fp_sid=n8n).\n3. Connect Google Sheets, Google Drive, Slack and an OpenAI key.\n4. Point the two Sheets nodes at your queue, and the Drive node at a folder.\n5. Run once manually before enabling the schedule.",
+        "content": "## Archive a YouTube queue to Drive, with AI summaries\n\n### How it works\n\nEvery morning this reads a Google Sheet used as a work queue, picks up only the rows that have not been archived yet, and for each one downloads the video, uploads the file to Google Drive, optionally summarises the transcript with an LLM, writes the Drive link and any summary back to the same row, and posts a note to Slack.\n\n**AI summaries are optional.** The two AI nodes ship switched off, so the workflow runs with just Apify, Sheets, Drive and Slack. Enable *Summarise the transcript* and *OpenAI Chat Model* to turn them on \u2014 the sheet and the Slack message both handle either case.\n\nWhen enabled, the model reads the transcript text the Actor already extracted, so it never touches the video and costs a fraction of a vision call.\n\n### The sheet\n\nOne row per video, with these column headers:\n\n`URL` \u2014 the YouTube link\n`Status` \u2014 leave empty; the workflow writes `Archived`\n`Drive link` \u2014 filled in by the workflow\n`Summary` \u2014 filled in only when the summary nodes are enabled\n\nRows whose **Status** is already filled are skipped, so the workflow is safe to run daily and will never re-download the same video.\n\n### Setup\n\n1. Install `n8n-nodes-youtube-downloader`.\n2. Add an **Apify API** credential \u2014 free account at [apify.com](https://apify.com?fpr=bucho&fp_sid=n8n).\n3. Connect Google Sheets, Google Drive and Slack. An OpenAI key is only needed if you enable the summary nodes.\n4. Point the two Sheets nodes at your queue, and the Drive node at a folder.\n5. Run once manually before enabling the schedule.",
         "width": 460,
         "height": 940
       },
@@ -34,7 +34,7 @@
     },
     {
       "parameters": {
-        "content": "### Download once, use twice\n\nOne Actor run produces both the playable file and the transcript. The file goes to Drive as binary; the transcript feeds the model.",
+        "content": "### Download once, use twice\n\nOne Actor run produces both the playable file and the transcript. The file goes to Drive as binary; the transcript is there for the model if you switch the summary on.",
         "width": 640,
         "height": 300,
         "color": 4
@@ -208,7 +208,10 @@
         300
       ],
       "id": "a6000000-0000-4000-8000-000000000006",
-      "name": "Summarise the transcript"
+      "name": "Summarise the transcript",
+      "disabled": true,
+      "notes": "Optional. Enable this and the model below to add AI summaries.",
+      "notesInFlow": true
     },
     {
       "parameters": {
@@ -227,7 +230,8 @@
         500
       ],
       "id": "a7000000-0000-4000-8000-000000000007",
-      "name": "OpenAI Chat Model"
+      "name": "OpenAI Chat Model",
+      "disabled": true
     },
     {
       "parameters": {
@@ -250,7 +254,7 @@
             "row_number": "={{ $('Skip rows already archived').item.json.row_number }}",
             "Status": "Archived",
             "Drive link": "={{ $('Upload the file to Drive').item.json.webViewLink }}",
-            "Summary": "={{ $json.text }}"
+            "Summary": "={{ $('Summarise the transcript').isExecuted ? $json.text : '' }}"
           },
           "matchingColumns": [
             "row_number"
@@ -277,7 +281,7 @@
           "mode": "name",
           "cachedResultName": "#content"
         },
-        "text": "=Archived *{{ $('Download video and transcript').item.json.title }}*\n{{ $('Upload the file to Drive').item.json.webViewLink }}\n\n{{ $json.text }}",
+        "text": "=Archived *{{ $('Download video and transcript').item.json.title }}*\n{{ $('Upload the file to Drive').item.json.webViewLink }}\n\n{{ $('Summarise the transcript').isExecuted ? $('Summarise the transcript').item.json.text : 'Summary skipped.' }}",
         "otherOptions": {}
       },
       "type": "n8n-nodes-base.slack",
