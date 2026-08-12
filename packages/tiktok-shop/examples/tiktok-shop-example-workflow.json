@@ -1,60 +1,146 @@
 {
-  "name": "TikTok Shop \u2014 product details and ranked review insights",
+  "name": "Track competitor products and review sentiment on TikTok Shop",
   "nodes": [
     {
       "parameters": {
-        "content": "## TikTok Shop \u2014 product research\n\n### How it works\n\nA manual trigger fetches a TikTok Shop product page, then feeds that product's ID into a second node that reads a sample of its reviews and ranks what buyers actually praise and complain about.\n\nThe first node returns price, variants, shop profile and the rating breakdown. The second returns `pain_points` and `praise_points` already ranked, plus a `verdict_summary` \u2014 a short, structured input for an LLM instead of a thousand raw reviews.\n\n### Setup steps\n\n1. **Settings \u2192 Community nodes \u2192 Install** and enter `n8n-nodes-tiktok-shop-apify`.\n2. Create a free [Apify account](https://apify.com?fpr=bucho&fp_sid=n8n) and copy your API token from **Settings \u2192 Integrations**.\n3. Add an **Apify API** credential in n8n and select it on both nodes.\n4. Paste your own product link into **Products** and click **Test workflow**.\n\n### Customization\n\n- **Region** switches storefront: US, UK, Singapore, Malaysia, Philippines, Thailand, Vietnam, Japan or Mexico. It changes the actual products and prices, not just the language.\n- **Review Sample Size** trades depth for cost; set `0` to skip review analysis.\n- Swap the second node to **Get Reviews** for one row per review instead of a ranked summary.\n- Append a **Google Sheets** node to log price and rating on a schedule.",
-        "width": 480,
-        "height": 700
+        "content": "## Track competitor products on TikTok Shop\n\n### How it works\n\nEvery morning this searches TikTok Shop for a keyword you care about and upserts every result into a Google Sheet, keyed on the product ID. Because it upserts rather than appends, running it daily builds a live picture of the market instead of a pile of duplicates \u2014 price and rating move in place on the row.\n\nIt then takes the single top-ranked product and pulls its review insights: the pain points and praise buyers actually wrote, already ranked, posted to Slack so the team reads the verdict without opening the sheet.\n\n### The sheet\n\nNo setup needed. Columns are created from the data on first run; `product_id` is the key the upsert matches on.\n\n### Setup\n\n1. Install `n8n-nodes-tiktok-shop-apify` from **Settings \u2192 Community nodes**.\n2. Add an **Apify API** credential \u2014 free account at [apify.com](https://apify.com?fpr=bucho&fp_sid=n8n). On n8n Cloud you can use **OAuth2** instead and skip the token.\n3. Connect Google Sheets and Slack.\n4. Point the Sheets node at your spreadsheet and pick a Slack channel.\n5. Run once by hand, check the sheet, then enable the schedule.",
+        "width": 460,
+        "height": 820
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -880,
-        -40
+        -1120,
+        -200
       ],
-      "id": "aaaaaaaa-0000-4000-8000-000000000001",
+      "id": "501cky00-0000-4000-8000-000000000000",
       "name": "Sticky Note"
     },
     {
-      "parameters": {},
-      "type": "n8n-nodes-base.manualTrigger",
+      "parameters": {
+        "content": "### One search, two jobs\n\nThe search output feeds both branches: everything goes to the sheet, and only the top result is analysed, because review analysis costs a request per product.",
+        "width": 560,
+        "height": 260,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -300,
-        300
+        -620,
+        -200
       ],
-      "id": "bbbbbbbb-0000-4000-8000-000000000002",
-      "name": "Manual Trigger"
+      "id": "511cky00-0000-4000-8000-000000000001",
+      "name": "Sticky Note1"
     },
     {
-      "id": "cccccccc-0000-4000-8000-000000000003",
-      "name": "Get Product Details",
+      "parameters": {
+        "content": "### Why upsert\n\nMatching on `product_id` means a daily run updates the row it wrote yesterday. You get a current snapshot, and no duplicate rows to clean up.",
+        "width": 560,
+        "height": 300,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        200,
+        160
+      ],
+      "id": "521cky00-0000-4000-8000-000000000002",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -580,
+        300
+      ],
+      "id": "b1000000-0000-4000-8000-000000000001",
+      "name": "Every morning at 8"
+    },
+    {
+      "parameters": {
+        "resource": "search",
+        "operation": "searchProducts",
+        "keyword": "wireless earbuds",
+        "region": "US",
+        "returnAll": false,
+        "limit": 20,
+        "enrichProductDetails": false,
+        "options": {}
+      },
       "type": "n8n-nodes-tiktok-shop-apify.tikTokShop",
       "typeVersion": 1,
       "position": [
-        40,
+        -340,
         300
       ],
-      "parameters": {
-        "resource": "product",
-        "operation": "productDetails",
-        "productIds": "https://shop.tiktok.com/us/pdp/1730927783781307026",
-        "region": "US",
-        "options": {}
-      },
-      "notes": "Returns price, variants, shop profile, category path and the rating breakdown.",
+      "id": "b2000000-0000-4000-8000-000000000002",
+      "name": "Search TikTok Shop",
+      "notes": "Top 20 results for the keyword.",
       "notesInFlow": true
     },
     {
-      "id": "dddddddd-0000-4000-8000-000000000004",
-      "name": "Get Review Insights",
-      "type": "n8n-nodes-tiktok-shop-apify.tikTokShop",
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "TikTok Shop tracker"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Products"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "product_id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -60,
+        180
+      ],
+      "id": "b3000000-0000-4000-8000-000000000003",
+      "name": "Upsert into the sheet",
+      "notes": "Upserts on product_id, so re-running never duplicates a row.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "maxItems": 1
+      },
+      "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        360,
-        300
+        -60,
+        420
       ],
+      "id": "b4000000-0000-4000-8000-000000000004",
+      "name": "Keep the top result",
+      "notes": "Review analysis costs one request per product, so only the leader is analysed.",
+      "notesInFlow": true
+    },
+    {
       "parameters": {
         "resource": "product",
         "operation": "productReviewInsights",
@@ -63,8 +149,35 @@
         "reviewSampleSize": 100,
         "options": {}
       },
-      "notes": "Reads the product_id from the previous node and ranks buyer pain points and praise.",
-      "notesInFlow": true
+      "type": "n8n-nodes-tiktok-shop-apify.tikTokShop",
+      "typeVersion": 1,
+      "position": [
+        200,
+        420
+      ],
+      "id": "b5000000-0000-4000-8000-000000000005",
+      "name": "Rank its reviews"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "",
+          "mode": "name",
+          "cachedResultName": "#growth"
+        },
+        "text": "=*{{ $('Keep the top result').item.json.title }}* is ranking top for *{{ $('Search TikTok Shop').params.keyword }}*\n\nRating {{ $json.rating_average }} from {{ $json.total_reviews }} reviews\n\n*What buyers complain about*\n{{ $json.pain_points.map(p => '\u2022 ' + p.theme).join('\\n') }}\n\n*What they praise*\n{{ $json.praise_points.map(p => '\u2022 ' + p.theme).join('\\n') }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        460,
+        420
+      ],
+      "id": "b6000000-0000-4000-8000-000000000006",
+      "name": "Post the verdict to Slack"
     }
   ],
   "pinData": {},
@@ -72,22 +185,51 @@
     "executionOrder": "v1"
   },
   "connections": {
-    "Manual Trigger": {
+    "Every morning at 8": {
       "main": [
         [
           {
-            "node": "Get Product Details",
+            "node": "Search TikTok Shop",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Get Product Details": {
+    "Search TikTok Shop": {
       "main": [
         [
           {
-            "node": "Get Review Insights",
+            "node": "Upsert into the sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Keep the top result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keep the top result": {
+      "main": [
+        [
+          {
+            "node": "Rank its reviews",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rank its reviews": {
+      "main": [
+        [
+          {
+            "node": "Post the verdict to Slack",
             "type": "main",
             "index": 0
           }

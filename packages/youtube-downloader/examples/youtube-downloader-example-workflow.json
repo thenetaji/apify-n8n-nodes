@@ -1,82 +1,293 @@
 {
-  "name": "YouTube Downloader — video, MP3 and transcript",
+  "name": "Archive a YouTube queue to Google Drive with AI summaries",
   "nodes": [
     {
       "parameters": {
-        "content": "## YouTube Downloader — video, MP3 and transcript\n\n### How it works\n\nA manual trigger fans out to two YouTube Downloader nodes that run in parallel, so one click produces both a video file and an audio file from the same source.\n\nThe video branch runs the Apify **YouTube Video Downloader** Actor, saves a playable 720p MP4, and attaches the English transcript alongside it. The audio branch runs the **YouTube Music Downloader** Actor and returns an MP3.\n\nBoth branches pull the finished file back from Apify and attach it to the item's `data` binary property, so the very next node can upload it straight to Google Drive, S3 or Telegram.\n\n### Setup steps\n\n1. **Settings → Community nodes → Install** and enter `n8n-nodes-youtube-downloader`.\n2. Create a free [Apify account](https://console.apify.com/sign-up) and copy your personal API token from **Settings → Integrations**.\n3. Add a new **Apify API** credential in n8n, paste the token, and select it on both downloader nodes.\n4. Replace the two example URLs with your own, then click **Test workflow**.\n\n### Customization\n\n- **Maximum Quality** accepts 144p through 4320p, and **File Format** MP4, WebM or MKV.\n- **Audio Format** switches between MP3, M4A and WebM.\n- **Subtitle Language** takes any language code, such as `es` or `pt-BR`. Turn **Add Transcript** off if you do not need it.\n- Turn **Save Playable Files** off to get metadata and expiring direct links without paying for storage.\n- Feed URLs from a Google Sheet instead of the hard-coded example to process many videos in one run.",
-        "width": 480,
-        "height": 784
+        "content": "## Archive a YouTube queue to Drive, with AI summaries\n\n### How it works\n\nEvery morning this reads a Google Sheet used as a work queue, picks up only the rows that have not been archived yet, and for each one downloads the video, uploads the file to Google Drive, summarises the transcript with an LLM, writes the Drive link and the summary back to the same row, and posts a note to Slack.\n\nThe transcript is what makes the summary cheap: the model reads text the Actor already extracted, so it never touches the video itself.\n\n### The sheet\n\nOne row per video, with these column headers:\n\n`URL` \u2014 the YouTube link\n`Status` \u2014 leave empty; the workflow writes `Archived`\n`Drive link` \u2014 filled in by the workflow\n`Summary` \u2014 filled in by the workflow\n\nRows whose **Status** is already filled are skipped, so the workflow is safe to run daily and will never re-download the same video.\n\n### Setup\n\n1. Install `n8n-nodes-youtube-downloader`.\n2. Add an **Apify API** credential \u2014 free account at [apify.com](https://apify.com?fpr=bucho&fp_sid=n8n).\n3. Connect Google Sheets, Google Drive, Slack and an OpenAI key.\n4. Point the two Sheets nodes at your queue, and the Drive node at a folder.\n5. Run once manually before enabling the schedule.",
+        "width": 460,
+        "height": 940
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [-864, -16],
-      "id": "f00689f6-bb72-47d0-85b1-8c2f9ccd944c",
+      "position": [
+        -1140,
+        -180
+      ],
+      "id": "5t1cky00-0000-4000-8000-000000000000",
       "name": "Sticky Note"
     },
     {
       "parameters": {
-        "content": "## Manual media downloads\n\nThe manual trigger starts two YouTube Downloader branches in parallel: one saves a 720p MP4 with an English transcript, the other an MP3. Each attaches its file as binary on the `data` property.\n\nBoth nodes need the same **Apify API** credential.",
-        "width": 496,
-        "height": 624,
+        "content": "### Pick up only what is new\n\nThe filter keeps rows whose **Status** cell is still empty, so an interrupted run simply resumes on the next pass.",
+        "width": 620,
+        "height": 300,
         "color": 7
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [-304, -16],
-      "id": "5fb7bc2b-5802-4e8c-8701-541a1ac7eda6",
+      "position": [
+        -640,
+        -180
+      ],
+      "id": "5t1cky00-0000-4000-8000-000000000001",
       "name": "Sticky Note1"
     },
     {
-      "id": "5c1f0a52-6b21-4a0e-9d2b-1f7c0a3d4e10",
-      "name": "Manual Trigger",
-      "type": "n8n-nodes-base.manualTrigger",
-      "position": [-260, 300],
-      "parameters": {},
-      "typeVersion": 1
+      "parameters": {
+        "content": "### Download once, use twice\n\nOne Actor run produces both the playable file and the transcript. The file goes to Drive as binary; the transcript feeds the model.",
+        "width": 640,
+        "height": 300,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        60,
+        -180
+      ],
+      "id": "5t1cky00-0000-4000-8000-000000000002",
+      "name": "Sticky Note2"
     },
     {
-      "id": "9a4d7e13-0c58-4b6f-8a21-3d5e6f7a8b90",
-      "name": "Download Video as 720p MP4",
-      "type": "n8n-nodes-youtube-downloader.youTubeDownloader",
-      "notes": "Saves a playable 720p MP4 and attaches it as binary on the 'data' property, ready for Google Drive, S3 or Telegram. Also attaches the English transcript.",
-      "position": [40, 160],
       "parameters": {
-        "urls": "https://www.youtube.com/watch?v=arj7oStGLkU",
-        "format": "mp4",
-        "region": "US",
-        "options": {},
-        "quality": "720",
+        "content": "### Write the result back\n\nThe sheet is the source of truth, so the Drive link and the summary land on the original row. Slack is just the nudge.",
+        "width": 700,
+        "height": 300,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        760,
+        -180
+      ],
+      "id": "5t1cky00-0000-4000-8000-000000000003",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -600,
+        300
+      ],
+      "id": "a1000000-0000-4000-8000-000000000001",
+      "name": "Every morning at 7"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "YouTube archive queue"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Queue"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -380,
+        300
+      ],
+      "id": "a2000000-0000-4000-8000-000000000002",
+      "name": "Get the queue"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f1000000-0000-4000-8000-0000000000f1",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -160,
+        300
+      ],
+      "id": "a3000000-0000-4000-8000-000000000003",
+      "name": "Skip rows already archived"
+    },
+    {
+      "parameters": {
         "resource": "video",
         "operation": "downloadVideo",
+        "urls": "={{ $json.URL }}",
+        "region": "US",
         "saveMedia": true,
-        "downloadToBinary": true,
-        "subtitleLanguage": "en",
+        "quality": "1080",
+        "format": "mp4",
         "includeTranscript": true,
-        "binaryPropertyName": "data"
+        "subtitleLanguage": "en",
+        "downloadToBinary": true,
+        "binaryPropertyName": "data",
+        "options": {}
       },
-      "notesInFlow": true,
-      "typeVersion": 1
+      "type": "n8n-nodes-youtube-downloader.youTubeDownloader",
+      "typeVersion": 1,
+      "position": [
+        120,
+        300
+      ],
+      "id": "a4000000-0000-4000-8000-000000000004",
+      "name": "Download video and transcript",
+      "notes": "One run returns the MP4 as binary on 'data' plus the transcript.",
+      "notesInFlow": true
     },
     {
-      "id": "c2b8f640-77a9-4e31-95cd-2a4b6c8d0e11",
-      "name": "Download Audio as MP3",
-      "type": "n8n-nodes-youtube-downloader.youTubeDownloader",
-      "notes": "Rips the same track as an MP3 and attaches it as binary on the 'data' property.",
-      "position": [40, 440],
       "parameters": {
-        "urls": "https://music.youtube.com/watch?v=arj7oStGLkU",
-        "region": "US",
-        "options": {},
-        "resource": "music",
-        "operation": "downloadMusic",
-        "audioFormat": "mp3",
-        "downloadToBinary": true,
-        "subtitleLanguage": "",
-        "includeTranscript": false,
-        "binaryPropertyName": "data"
+        "name": "={{ $json.title }}.mp4",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "root",
+          "mode": "list",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
       },
-      "notesInFlow": true,
-      "typeVersion": 1
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        380,
+        300
+      ],
+      "id": "a5000000-0000-4000-8000-000000000005",
+      "name": "Upload the file to Drive"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Summarise this YouTube video for someone deciding whether to watch it.\n\nGive three to five bullet points covering what it actually teaches, then one line on who it is for. Do not pad it, and do not restate the title.\n\nTitle: {{ $('Download video and transcript').item.json.title }}\n\nTranscript:\n{{ $('Download video and transcript').item.json.transcript }}",
+        "messages": {},
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        640,
+        300
+      ],
+      "id": "a6000000-0000-4000-8000-000000000006",
+      "name": "Summarise the transcript"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        500
+      ],
+      "id": "a7000000-0000-4000-8000-000000000007",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "YouTube archive queue"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Queue"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Skip rows already archived').item.json.row_number }}",
+            "Status": "Archived",
+            "Drive link": "={{ $('Upload the file to Drive').item.json.webViewLink }}",
+            "Summary": "={{ $json.text }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        900,
+        300
+      ],
+      "id": "a8000000-0000-4000-8000-000000000008",
+      "name": "Write the result back"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "",
+          "mode": "name",
+          "cachedResultName": "#content"
+        },
+        "text": "=Archived *{{ $('Download video and transcript').item.json.title }}*\n{{ $('Upload the file to Drive').item.json.webViewLink }}\n\n{{ $json.text }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1160,
+        300
+      ],
+      "id": "a9000000-0000-4000-8000-000000000009",
+      "name": "Post it to Slack"
     }
   ],
   "pinData": {},
@@ -84,17 +295,89 @@
     "executionOrder": "v1"
   },
   "connections": {
-    "Manual Trigger": {
+    "Every morning at 7": {
       "main": [
         [
           {
-            "node": "Download Video as 720p MP4",
+            "node": "Get the queue",
             "type": "main",
             "index": 0
-          },
+          }
+        ]
+      ]
+    },
+    "Get the queue": {
+      "main": [
+        [
           {
-            "node": "Download Audio as MP3",
+            "node": "Skip rows already archived",
             "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Skip rows already archived": {
+      "main": [
+        [
+          {
+            "node": "Download video and transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download video and transcript": {
+      "main": [
+        [
+          {
+            "node": "Upload the file to Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload the file to Drive": {
+      "main": [
+        [
+          {
+            "node": "Summarise the transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarise the transcript": {
+      "main": [
+        [
+          {
+            "node": "Write the result back",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write the result back": {
+      "main": [
+        [
+          {
+            "node": "Post it to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarise the transcript",
+            "type": "ai_languageModel",
             "index": 0
           }
         ]
