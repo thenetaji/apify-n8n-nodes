@@ -74,15 +74,25 @@ jobs:
           echo "dir=${dir}" >> "$GITHUB_OUTPUT"
           echo "Publishing ${dir}"
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version-file: ${{ steps.pkg.outputs.dir }}/.nvmrc
           registry-url: 'https://registry.npmjs.org'
-          cache: 'npm'
+          cache: 'pnpm'
+          cache-dependency-path: ${{ steps.pkg.outputs.dir }}/pnpm-lock.yaml
 
+      # Each package is its own pnpm root. --ignore-scripts skips the native
+      # builds that only the local `n8n-node dev` runtime needs; compiling and
+      # linting do not touch them.
       - name: Install dependencies
-        run: npm ci
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       # Guards against tagging youtube-downloader-v0.2.0 while package.json still
       # says 0.1.0, which would silently publish the wrong version number.
@@ -98,10 +108,12 @@ jobs:
           fi
 
       - name: Lint
-        run: npm run lint --workspace "${{ steps.pkg.outputs.dir }}"
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        run: pnpm run lint
 
       - name: Build
-        run: npm run build --workspace "${{ steps.pkg.outputs.dir }}"
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        run: pnpm run build
 
       - name: Publish to npm with provenance
         working-directory: ${{ steps.pkg.outputs.dir }}
