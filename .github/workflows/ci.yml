@@ -12,33 +12,66 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  # Each package carries its own pnpm-workspace.yaml and lockfile, so it is its
+  # own pnpm root and is checked independently. That also means one broken
+  # package does not mask the others.
+  package:
+    name: ${{ matrix.package }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - pinterest
+          - tiktok
+          - tiktok-shop
+          - youtube-downloader
+          - youtube-scraper
+
+    defaults:
+      run:
+        working-directory: packages/${{ matrix.package }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: packages/${{ matrix.package }}/.nvmrc
+          cache: 'pnpm'
+          cache-dependency-path: packages/${{ matrix.package }}/pnpm-lock.yaml
+
+      # --ignore-scripts skips the native builds (isolated-vm and friends) that
+      # only the local `n8n-node dev` runtime needs. Linting, compiling and the
+      # unit tests do not touch them, and building them here costs minutes.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Test
+        run: pnpm test
+
+  # A runtime dependency in any package would fail n8n's verification review,
+  # so it is cheaper to catch it here than after submitting. No install needed.
+  no-runtime-deps:
+    name: Assert no runtime dependencies
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      # Every workspace under packages/ is linted, built and tested.
-      - name: Lint
-        run: npm run lint
-
-      - name: Build
-        run: npm run build
-
-      - name: Test
-        run: npm test --workspaces --if-present
-
-      # A runtime dependency in any package would fail n8n's verification review,
-      # so it is cheaper to catch it here than after submitting.
       - name: Assert no runtime dependencies
         run: |
           set -euo pipefail
