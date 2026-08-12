@@ -42,6 +42,8 @@ self-hosted and Cloud specifics.
 2. Open **Settings → Integrations** and copy your **Personal API token**.
 3. In n8n, add a new **Apify API** credential and paste the token into **API Key**.
 
+On **n8n Cloud** you can skip the token: set the node's **Authentication** to **OAuth2**, add an **Apify OAuth2 API** credential and click **Connect my account**.
+
 The same credential works for every Apify node in this repo, so you only enter the token once.
 
 ## Your first run
@@ -183,6 +185,7 @@ with the Actors.
 
 ## Version history
 
+- **0.3.0** — added OAuth2 sign-in, so n8n Cloud users can connect their Apify account with a button instead of pasting a key.
 - **0.2.0** — the Apify credential field is now **API Key**, matching the shape Apify publishes, so one saved credential works across every Apify node. Re-enter your token if you saved it under 0.1.x.
 - **0.1.1** — documentation only: Apify links are now referral links.
 - **0.1.0** — first release: 12 operations across Video, Channel, Playlist and Search.

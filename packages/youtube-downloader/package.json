@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-youtube-downloader",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "n8n community node to run the Apify YouTube Video Downloader and YouTube Music Downloader Actors from your workflows.",
 	"license": "MIT",
 	"homepage": "https://github.com/thenetaji/apify-n8n-nodes/tree/main/packages/youtube-downloader",
@@ -45,7 +45,8 @@
 		"n8nNodesApiVersion": 1,
 		"strict": true,
 		"credentials": [
-			"dist/credentials/ApifyApi.credentials.js"
+			"dist/credentials/ApifyApi.credentials.js",
+			"dist/credentials/ApifyOAuth2Api.credentials.js"
 		],
 		"nodes": [
 			"dist/nodes/YouTubeDownloader/YouTubeDownloader.node.js"

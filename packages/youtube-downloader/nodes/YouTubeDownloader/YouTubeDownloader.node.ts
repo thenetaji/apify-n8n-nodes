@@ -41,9 +41,13 @@ async function apifyRequest(
 	ctx: IExecuteFunctions,
 	options: IHttpRequestOptions,
 ): Promise<IDataObject> {
+	// Which credential to send is a node-level choice, so it is read once from
+	// the first item rather than per item.
+	const credential = ctx.getNodeParameter('authentication', 0, 'apifyApi') as string;
+
 	return (await ctx.helpers.httpRequestWithAuthentication.call(
 		ctx,
-		'apifyApi',
+		credential,
 		options,
 	)) as IDataObject;
 }
@@ -67,9 +71,42 @@ export class YouTubeDownloader implements INodeType {
 			{
 				name: 'apifyApi',
 				required: true,
+				displayOptions: {
+					show: {
+						authentication: ['apifyApi'],
+					},
+				},
+			},
+			{
+				name: 'apifyOAuth2Api',
+				required: true,
+				displayOptions: {
+					show: {
+						authentication: ['apifyOAuth2Api'],
+					},
+				},
 			},
 		],
 		properties: [
+			{
+				displayName: 'Authentication',
+				name: 'authentication',
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{
+						name: 'API Key',
+						value: 'apifyApi',
+					},
+					{
+						name: 'OAuth2',
+						value: 'apifyOAuth2Api',
+					},
+				],
+				default: 'apifyApi',
+				description:
+					'How to connect to Apify. API Key works everywhere; OAuth2 is the easier choice on n8n Cloud, where pasting a long-lived token is awkward.',
+			},
 			{
 				displayName: 'Resource',
 				name: 'resource',
@@ -591,7 +628,7 @@ export class YouTubeDownloader implements INodeType {
 						try {
 							const fileResponse = (await this.helpers.httpRequestWithAuthentication.call(
 								this,
-								'apifyApi',
+								this.getNodeParameter('authentication', 0, 'apifyApi') as string,
 								{
 									method: 'GET',
 									url: savedFile.url as string,

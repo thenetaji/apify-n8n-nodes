@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-pinterest-apify",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "n8n community node to run the Apify Pinterest Actors — pins, profiles, boards and search — from your workflows.",
 	"license": "MIT",
 	"homepage": "https://github.com/thenetaji/apify-n8n-nodes/tree/main/packages/pinterest",
@@ -46,7 +46,8 @@
 		"n8nNodesApiVersion": 1,
 		"strict": true,
 		"credentials": [
-			"dist/credentials/ApifyApi.credentials.js"
+			"dist/credentials/ApifyApi.credentials.js",
+			"dist/credentials/ApifyOAuth2Api.credentials.js"
 		],
 		"nodes": [
 			"dist/nodes/Pinterest/Pinterest.node.js"
