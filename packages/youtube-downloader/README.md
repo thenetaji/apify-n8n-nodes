@@ -35,15 +35,15 @@ Tick the box to acknowledge the risks of community nodes, and select **Install**
 
 ## Connect your Apify account
 
-The downloading itself runs on [Apify](https://apify.com), so the node needs to sign in to your Apify account. This takes about a minute:
+The downloading itself runs on [Apify](https://apify.com?fpr=bucho&fp_sid=n8n), so the node needs to sign in to your Apify account. This takes about a minute:
 
-1. Create a free account at [apify.com](https://apify.com) if you don't have one.
+1. Create a free account at [apify.com](https://apify.com?fpr=bucho&fp_sid=n8n) if you don't have one.
 2. Go to [Apify Console → Settings → Integrations](https://console.apify.com/settings/integrations).
 3. Copy your **Personal API token**.
 4. Back in n8n, add a new **Apify API** credential and paste the token in.
 5. Select **Test credential**. A green tick means you're connected.
 
-Both downloaders are paid Actors on Apify — current pricing is on the [Video Downloader](https://apify.com/thenetaji/youtube-video-downloader) and [Music Downloader](https://apify.com/thenetaji/youtube-music-downloader) pages. If your account doesn't have access yet, the node tells you so directly rather than failing silently.
+Both downloaders are paid Actors on Apify — current pricing is on the [Video Downloader](https://apify.com/thenetaji/youtube-video-downloader?fpr=bucho&fp_sid=n8n) and [Music Downloader](https://apify.com/thenetaji/youtube-music-downloader?fpr=bucho&fp_sid=n8n) pages. If your account doesn't have access yet, the node tells you so directly rather than failing silently.
 
 ## Your first download
 
@@ -161,7 +161,7 @@ Two things are billed on your Apify account: running the downloader, and the siz
 
 If you only need titles, view counts, or transcripts, leave **Save Playable Files** off — it's meaningfully cheaper.
 
-Current rates are on the [Video Downloader](https://apify.com/thenetaji/youtube-video-downloader) and [Music Downloader](https://apify.com/thenetaji/youtube-music-downloader) Actor pages.
+Current rates are on the [Video Downloader](https://apify.com/thenetaji/youtube-video-downloader?fpr=bucho&fp_sid=n8n) and [Music Downloader](https://apify.com/thenetaji/youtube-music-downloader?fpr=bucho&fp_sid=n8n) Actor pages.
 
 ## For developers
 
@@ -173,14 +173,17 @@ The package has **zero runtime dependencies** — every request goes through n8n
 
 ## Links
 
-- [Video Downloader Actor](https://apify.com/thenetaji/youtube-video-downloader)
-- [Music Downloader Actor](https://apify.com/thenetaji/youtube-music-downloader)
+- [Video Downloader Actor](https://apify.com/thenetaji/youtube-video-downloader?fpr=bucho&fp_sid=n8n)
+- [Music Downloader Actor](https://apify.com/thenetaji/youtube-music-downloader?fpr=bucho&fp_sid=n8n)
 - [Source code and issues](https://github.com/thenetaji/apify-n8n-nodes)
 - [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
 
 ## Version history
 
+- **0.1.1** — documentation only: Apify links are now referral links.
 **0.1.0** — First release. Video and music downloads, transcripts and subtitles, files attached directly as n8n binary data, and support for continuing past failed items.
+
+*Apify links in this README are referral links.*
 
 ## License
 

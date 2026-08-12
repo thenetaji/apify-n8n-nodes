@@ -1,7 +1,7 @@
 # apify-n8n-nodes
 
-[n8n](https://n8n.io) community nodes for [Apify](https://apify.com) Actors published by
-[thenetaji](https://apify.com/thenetaji).
+[n8n](https://n8n.io) community nodes for [Apify](https://apify.com?fpr=bucho&fp_sid=n8n) Actors published by
+[thenetaji](https://apify.com/thenetaji?fpr=bucho&fp_sid=n8n).
 
 Each node runs a hosted Actor on Apify from inside an n8n workflow, so scraping and media
 work happens on Apify's infrastructure while the results flow straight into your automation.
@@ -82,6 +82,8 @@ pnpm run dev          # starts n8n at http://localhost:5678 with the node loaded
 Packages are published exclusively from GitHub Actions with
 [npm provenance](https://docs.npmjs.com/generating-provenance-statements) — never from a
 local machine. This is a requirement for n8n's community node verification programme.
+
+*Apify links in this README are referral links.*
 
 ## License
 

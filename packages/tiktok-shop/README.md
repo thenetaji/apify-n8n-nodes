@@ -3,7 +3,7 @@
 Pull TikTok Shop data into your n8n workflows — product pages, reviews, sellers, categories,
 search results and the trending rails — without writing a scraper or touching a browser.
 
-The node runs [Apify Actors](https://apify.com/thenetaji) published by
+The node runs [Apify Actors](https://apify.com/thenetaji?fpr=bucho&fp_sid=n8n) published by
 [thenetaji](https://github.com/thenetaji). The scraping happens on Apify's infrastructure; the
 rows land in your workflow as ordinary n8n items.
 
@@ -30,7 +30,7 @@ self-hosted and Cloud specifics.
 
 - A self-hosted n8n, or n8n Cloud with community nodes enabled
 - Node.js 20.15 or newer (self-hosted)
-- A free [Apify account](https://console.apify.com/sign-up) for the API token
+- A free [Apify account](https://apify.com?fpr=bucho&fp_sid=n8n) for the API token
 
 ## Connect your Apify account
 
@@ -189,14 +189,17 @@ registry entry plus its UI properties — the run, poll and collect machinery is
 
 ## Links
 
-- [Actors on Apify](https://apify.com/thenetaji)
+- [Actors on Apify](https://apify.com/thenetaji?fpr=bucho&fp_sid=n8n)
 - [Repository](https://github.com/thenetaji/apify-n8n-nodes)
 - [Issues](https://github.com/thenetaji/apify-n8n-nodes/issues)
 - [n8n community nodes](https://docs.n8n.io/integrations/community-nodes/)
 
 ## Version history
 
+- **0.1.1** — documentation only: Apify links are now referral links.
 - **0.1.0** — first release: 12 operations across Product, Search, Seller, Category and Trending.
+
+*Apify links in this README are referral links.*
 
 ## License
 
